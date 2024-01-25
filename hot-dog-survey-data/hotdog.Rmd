@@ -1,0 +1,68 @@
+---
+title: "hotdog"
+author: "Jasmine Tang"
+date: "2024-01-23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readxl)
+library(dplyr)
+library(ggplot2)
+dat <- read_excel("/Users/jasminetang/Desktop/Hot Dog Classification Survey_ Is it a Sandwich_  (Responses).xlsx")
+```
+
+```{r}
+colnames(dat)<-c("timestamp", "hotdog.is.sandwich", "reason", "undergrad.or.grad", "major", "year", "state.or.country")
+
+dat_lower <- dat %>% mutate(hotdog.is.sandwich=tolower(hotdog.is.sandwich)) %>% mutate(reason=tolower(reason)) %>% mutate(undergrad.or.grad=tolower(undergrad.or.grad)) %>% mutate(major=tolower(major)) %>% mutate(year=tolower(year)) %>% mutate(reason=tolower(reason)) %>% mutate(year=tolower(year)) %>% mutate(state.or.country=tolower(state.or.country)) 
+```
+
+```{r}
+dat_cs <- dat_lower %>% mutate(major=
+ifelse(grepl("cs",major),"computer science",major))
+
+dat_bme <- dat_cs %>% mutate(major=
+ifelse(grepl("bme",major),"biomedical engineering",major))
+```
+
+```{r}
+year_comparison <- 
+  ggplot(dat_bme, aes(x=factor(year, levels= c("first year", "second year", "third year", "fourth year")),fill= hotdog.is.sandwich))+
+geom_bar(position = "dodge")+labs(x="year", y="number of students", title = "y/n for hotdog being a sandwich")
+year_comparison
+```
+
+```{r}
+grad_comparison <- 
+  ggplot(dat_bme, aes(x=undergrad.or.grad,fill= hotdog.is.sandwich))+
+geom_bar(position = "dodge")+labs(x="undergrad.or.grad", y="number of students", title = "y/n for hotdog being a sandwich")
+grad_comparison
+```
+
+```{r}
+overall <- ggplot(dat_bme, aes(x=hotdog.is.sandwich)) + geom_bar() + labs(x="yes or no", y="number of students", title = "y/n for hotdog being a sandwich")
+
+overall
+```
+
+```{r}
+table(dat_bme$year)
+```
+
+```{r}
+major_comparison <- 
+  ggplot(dat_bme, aes(x=major),fill= hotdog.is.sandwich)+
+geom_bar(position = "dodge")+labs(x="major", y="number of students", title = "y/n for hotdog being a sandwich") + theme(axis.text.x = element_text(angle = 80, vjust = 0.5, hjust=0.5))
+major_comparison
+
+location <- 
+  ggplot(dat_bme, aes(x=state.or.country),fill= hotdog.is.sandwich)+
+geom_bar(position = "dodge")+labs(x="state.or.country", y="number of students", title = "y/n for hotdog being a sandwich") + theme(axis.text.x = element_text(angle = 80, vjust = 0.5, hjust=0.5))
+location
+```
+
